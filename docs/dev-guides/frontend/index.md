@@ -1,7 +1,7 @@
 ---
-sidebar_position: 4
+sidebar_position: 6
 ---
-# 代码架构
+# 前端代码架构
 
 import DocCardList from '@theme/DocCardList';
 
