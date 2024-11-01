@@ -3,11 +3,15 @@ sidebar_position: 4
 ---
 # 开发一个后端集成
 
-provider 方法介绍
+快速实现一个自定义集成
 
-## 目录结构
+## 项目入口
 
-## 约定实体
+### YAML 配置
+
+### IntegrationBootstrap
+
+### 约定实体
 
 ### 新增设备
 
@@ -17,8 +21,7 @@ provider 方法介绍
 
 删除设备的上下文，有device，这个服务实体不应当含有子实体
 
-## 关键注解
-
-### EventSubscribe
+### 监听事件
 
 Spring Event
+

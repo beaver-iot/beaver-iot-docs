@@ -2,12 +2,17 @@
 sidebar_position: 3
 ---
 
+import { ProjectName } from '/src/consts';
+
+
 # 关键对象
+
+编码的基础对象介绍
 
 ## Integration
 
-`Integration`是集成的配置对象，一般是通过集成的yaml文件配置，里面包含了集成的：
-* id (对于集成来说就是其identifier)
+`Integration`是集成配置对象，一般是通过集成的yaml文件配置，里面包含了集成的：
+* id (对于集成来说就是它的identifier)
 * 名称
 * 图标
 * 添加设备的服务实体key
@@ -27,15 +32,15 @@ sidebar_position: 3
 * identifier
 * 包含的实体
 
-:::note 注意
-设备在保存后，除了**名称**和**额外数据**都不再变化，
+:::tip
+设备在保存后，除了**名称**和**额外数据**都不建议再改变其它元数据。
 :::
 
 
 
 ## Entity
 
-`Entity`是实体的实例，对象内容包括：
+`Entity`是实体的实例，对象内容是实体的元数据(不包含实体的值)，包括：
 * id
 * 如果是设备的实体，那么会含有设备的key
 * 如果是集成的实体，那么会含有集成的id
@@ -48,15 +53,44 @@ sidebar_position: 3
 * 子实体
 * key
 
-## Event
+:::tip
+实体在保存后，除了**名称**和**实体属性**都不建议再改变其它元数据。
+:::
 
-Event分为`DeviceEvent` / `EntityEvent` / `ExchangeEvent`
+## Event 事件
 
-## Exchange
+{ProjectName}的某些资源发生变化时，会触发相关的**事件**`Event`，订阅这些事件的处理方法就会被触发，这是整个系统运行的基础。
 
-Exchange Up
+事件分为： **设备事件**`DeviceEvent` / **实体事件**`EntityEvent` / **实体值数据交换事件**`ExchangeEvent`
 
-Exchange Down
+### DeviceEvent
+表示**设备元数据**相关事件，事件的类型(`DeviceEvent.EventType`)有：创建`CREATED` / 更新`UPDATED` / 删除`DELETED`。这个事件会携带发生变化的设备。*这个事件在保存设备元数据时会自动触发，一般不需要集成开发者发送事件。*
 
-## EventBus
+### EntityEvent
+表示**实体元数据**相关事件，事件的类型(`EntityEvent.EventType`)有：创建`CREATED` / 更新`UPDATED` / 删除`DELETED`。这个事件会携带发生变化的实体。*这个事件在保存实体元数据时会自动触发，一般不需要集成开发者发送事件。*
 
+### ExchangeEvent
+表示**实体值数据**相关事件，事件的类型(`ExchangeEvent.EventType`)有：下行`DOWN` / 上行`UP`。
+
+
+:::info
+实体数据**下行**和**上行**表示的主体是实体的所属者。**下行**表示数据流向这个所属者，**上行**表示数据从这个所属者流出。*当数据流出和流入的所属者相同时，按流出方为准，即按照<b>上行</b>对待。*
+
+#### 下行举例
+* 用户在前端更新一个设备或者集成的属性或服务实体
+* 集成的定时任务，触发一个设备的服务实体
+
+#### 上行举例
+* 设备上传了属性实体值的更新
+* 设备上传了事件
+* *集成更新了集成自己的实体*
+
+:::
+
+`ExchangeEvent`事件我们会触发**通用内置流程**，流程包含实体**数据校验**、实体**当前值保存**（仅属性实体）、实体**历史值保存**，然后才触发相关订阅的方法。
+
+![Exchange Event Flow](/img/exchange-flow.svg)
+
+无论是同步请求还是异步请求，相关监听器都会被调用。
+
+同步请求的情况下，某些监听器的执行抛出了异常，会先捕捉并收集，然后在所有同步监听器执行完毕后抛出一个异常。如果没有抛出异常，则返回所有同步监听器的执行结果。
