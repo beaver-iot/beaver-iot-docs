@@ -5,14 +5,14 @@ import { ProjectName } from '../../consts';
 
 type FeatureItem = {
   title: string;
-  Svg: React.ComponentType<React.ComponentProps<'svg'>>;
+  Img: string;
   description: JSX.Element;
 };
 
 const FeatureList: FeatureItem[] = [
   {
     title: 'Connect Everything',
-    Svg: require('@site/static/img/wide-logo.svg').default,
+    Img: '/img/wide-logo.svg',
     description: (
       <>
         {ProjectName} was designed from the ground up to be easily installed and
@@ -22,11 +22,11 @@ const FeatureList: FeatureItem[] = [
   },
 ];
 
-function Feature({title, Svg, description}: FeatureItem) {
+function Feature({title, Img, description}: FeatureItem) {
   return (
     <div className={clsx('col')}>
       <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
+        <img src={Img} />
       </div>
       <div className="text--center padding-horiz--md">
         <Heading as="h3">{title}</Heading>
