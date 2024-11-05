@@ -16,7 +16,7 @@ const config: Config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'Milesight', // Usually your GitHub org/user name.
+  organizationName: 'Beaver IoT', // Usually your GitHub org/user name.
   projectName: ProjectName, // Usually your repo name.
 
   onBrokenLinks: 'throw',
@@ -69,7 +69,7 @@ const config: Config = {
       title: ProjectName,
       logo: {
         alt: 'My Site Logo',
-        src: 'img/favicon.ico',
+        src: 'img/logo.svg',
       },
       items: [
         {
