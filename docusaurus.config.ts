@@ -1,7 +1,7 @@
 import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
-import { DocUrl, ProjectName, ProjectRepo } from './src/consts';
+import { DocUrl, ProjectName, OrgGitURL } from './src/consts';
 
 const config: Config = {
   title: ProjectName,
@@ -27,7 +27,7 @@ const config: Config = {
   // may want to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: 'zh-Hans',
-    locales: ['zh-Hans', 'en'],
+    locales: ['zh-Hans'],
   },
 
   presets: [
@@ -38,7 +38,7 @@ const config: Config = {
           sidebarPath: './sidebars.ts',
           // 之后改到文档目录下
           editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+            '#',
         },
         // blog: {
         //   showReadingTime: true,
@@ -90,7 +90,7 @@ const config: Config = {
           position: 'right',
         },
         {
-          href: ProjectRepo,
+          href: OrgGitURL,
           label: 'GitHub',
           position: 'right',
         },
@@ -134,7 +134,7 @@ const config: Config = {
             },
             {
               label: 'GitHub',
-              href: ProjectRepo,
+              href: OrgGitURL,
             },
           ],
         },
@@ -144,6 +144,7 @@ const config: Config = {
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
+      additionalLanguages: ['java', 'bash'],
     },
   } satisfies Preset.ThemeConfig,
 };
