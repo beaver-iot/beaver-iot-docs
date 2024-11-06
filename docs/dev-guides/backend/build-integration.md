@@ -3,8 +3,10 @@ sidebar_position: 3
 ---
 
 import CodeBlock from '@theme/CodeBlock';
-import { DevProjectRepoSSH } from '/src/consts';
+import { DevProjectRepoSSH, DevProjectRepoHttps } from '/src/consts';
 import { ProjectName } from '/src/consts';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # 快速入门
 
@@ -28,8 +30,14 @@ import { ProjectName } from '/src/consts';
 * Git CLI
 
 在准备这些完成后，运行以下git命令，获取集成开发的项目
-
-<CodeBlock className="language-shell">git clone {DevProjectRepoSSH}</CodeBlock>
+<Tabs>
+  <TabItem value="SSH" label="SSH" default>
+    <CodeBlock language="bash">git clone {DevProjectRepoSSH}</CodeBlock>
+  </TabItem>
+  <TabItem value="Https" label="Https">
+    <CodeBlock language="bash">git clone {DevProjectRepoHttps}</CodeBlock>
+  </TabItem>
+</Tabs>
 
 代码拉取完成后，使用IDE打开项目文件夹*beaver-iot-integrations*，您会发现两个模块，分别是`application-dev`和`integrations`。
 
