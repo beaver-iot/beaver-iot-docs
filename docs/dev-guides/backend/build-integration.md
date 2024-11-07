@@ -90,6 +90,11 @@ import { ProjectName } from '/src/consts';
     </build>
 </project>
 ```
+:::warning
+`scope`为`provided`的依赖不会被打包到集成中，而是由{ProjectName}提供，通过`maven-shade-plugin`插件将依赖包打包至一个jar包中。
+另外，`context`模块是{ProjectName}的核心模块，提供了集成开发的基础功能。
+:::
+
 
 在这个新建的模块下新建一个资源文件`integration.yaml`
 ```yaml title="beaver-iot-integrations/integrations/my-integration/src/main/resources/integration.yaml"
