@@ -72,6 +72,13 @@ git config user.email xxx@milesight.com
 执行命令：
 
 ```bash
+# 进入项目目录
+cd beaver-iot-web
+
+# 安装依赖
+pnpm install
+
+# 启动项目
 pnpm run start
 ```
 
