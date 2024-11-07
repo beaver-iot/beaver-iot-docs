@@ -8,12 +8,18 @@ sidebar_position: 1
 
 可直接在 [Beaver IoT Demo](https://demo.beaver-iot.com/) 上进行体验。
 
+
+
 ## 前置准备
 
 - Pnpm 8 及以上版本；
 - Node.js 20 及以上版本；
 
-### 安装 Pnpm
+:::tip 提示
+若本地 Pnpm, Node.js 已满足要求，则以下 1, 2 步骤可跳过。
+:::
+
+### 1. 安装 Pnpm
 
 ```bash
 curl -fsSL https://get.pnpm.io/install.sh | sh -
@@ -21,7 +27,7 @@ curl -fsSL https://get.pnpm.io/install.sh | sh -
 
 参考 [Pnpm 安装文档](https://pnpm.io/installation)。
 
-### 安装 Node
+### 2. 安装 Node
 
 ```bash
 # 安装 Node.js 的 LTS 版本
@@ -30,7 +36,7 @@ pnpm env use --global lts
 
 参考 [Pnpm Node.js 环境管理文档](https://pnpm.io/cli/env)。
 
-### 克隆仓库
+### 3. 克隆仓库
 
 生成 SSH Key（如果本地已有，可跳过）：
 
@@ -58,11 +64,17 @@ cd beaver-iot-web
 # 配置提交的用户名及邮箱
 # 若需全局修改，可增加 --global 参数
 git config user.name xxx
-git config user.email xxx@yeastar.com
+git config user.email xxx@milesight.com
 ```
 
 ## 启动运行
 
+执行命令：
+
 ```bash
 pnpm run start
 ```
+
+:::warning 注意
+项目默认配置了 Demo 环境的接口代理，项目启动后可使用 Demo 账号登录操作。若需切换其他环境可以参考 [环境变量](./development/env.md) 文档。
+:::
