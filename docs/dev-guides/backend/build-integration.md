@@ -399,7 +399,7 @@ public class MyDeviceService {
 接下来我们创建方法，监听Benchmark服务实体，并且实现这个方法。
 更新Java类文件`MyDeviceService.java`，在这个类中添加Benchmark服务实体的方法实现。
 
-检测所有设备完成后，会[上行](./key-object.md#exchangeevent)一个`detect_report`报告事件。
+检测所有设备完成后，会[上行](./advanced/eventbus.md#exchangeevent)一个`detect_report`报告事件。
 ```java title="beaver-iot-integrations/integrations/my-integration/src/main/java/com/milesight/beaveriot/myintegration/MyDeviceService.java"
 @Service
 public class MyDeviceService {
