@@ -201,7 +201,7 @@ public class MyDeviceEntities extends ExchangePayload {
           .property("webhookStatus", AccessMod.R) //设置实体属性
 //          .service("accessKey")             //设置实体服务
 //          .event("accessKey")               //设置实体事件
-          .attributes(new AttributeBuilder().maxLength(300).enums(IntegrationStatus.class).build())      //设置实体属性
+          .attributes(new AttributeBuilder().maxLength(300).enums(IntegrationStatus.class).build())      //设置实体属性,也可以使用attributes(Supplier<Map<String, Object>> supplier)方法进行构建
           .valueType(EntityValueType.STRING)    //设置实体值类型
           .build();
 ```
@@ -225,6 +225,28 @@ public class MyDeviceEntities extends ExchangePayload {
 ```
   </TabItem>
   <TabItem value="示例2" label="示例2">
+
+```java
+  // highlight-next-line
+  //示例2： 通过EntityBuilder的children(Supplier<List<Entity>> supplier)方法设置子实体
+  // highlight-next-line
+  Entity parentEntity = new EntityBuilder(integrationId)
+        .identifier("settings")
+        .property("settings", AccessMod.RW)
+        .valueType(EntityValueType.STRING)
+        // highlight-next-line
+        .children(()->{
+            Entity childEntity = new EntityBuilder()  //定义子实体
+                    .identifier("accessKey")
+                    .property("accessKey", AccessMod.RW)
+                    .valueType(EntityValueType.STRING)
+                    .build();
+            return List.of(childEntity);
+        })  //设置子实体，可以是List<Entity>或是单个实体
+        .build();
+```
+  </TabItem>
+  <TabItem value="示例3" label="示例3">
 
 ```java
   // highlight-next-line
@@ -259,7 +281,27 @@ public class MyDeviceEntities extends ExchangePayload {
 - **构建设备实体**
 
 <Tabs>
-  <TabItem value="示例1" label="示例1" default>
+  <TabItem value="示例1" label="示例1(推荐)" default>
+```java
+  //highlight-next-line 
+  //示例1： 通过DeviceBuilder构建设备及实体示例：
+  // highlight-next-line
+  Device device = new DeviceBuilder(integrationConfig.getId())
+          .name("deviceDemo")
+          .identifier("deviceDemoIdentifier")
+          .entity(entity)             //设置设备实体，可以是List<Entity>或是单个实体
+          .additional(Map.of("sn", "demoSN"))
+          .entity(()->{
+              return new EntityBuilder(integrationId)    //设置集成标识
+                    .identifier("temperature")        //设置实体标识
+                    .property("temperature", AccessMod.R) //设置实体属性
+                    .valueType(EntityValueType.STRING)    //设置实体值类型
+                    .build();
+            })
+          .build();
+```
+  </TabItem>
+  <TabItem value="示例2" label="示例2" default>
 ```java
   //highlight-next-line 
   //示例1： 通过DeviceBuilder构建设备及实体示例：
@@ -278,7 +320,7 @@ public class MyDeviceEntities extends ExchangePayload {
           .build();
 ```
   </TabItem>
-  <TabItem value="示例2" label="示例2">
+  <TabItem value="示例3" label="示例3">
 
 ```java
     // highlight-next-line

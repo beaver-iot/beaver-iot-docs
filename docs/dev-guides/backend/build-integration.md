@@ -198,7 +198,7 @@ public class MyIntegrationBootstrap implements IntegrationBootstrap {
 
 新建一个Java类文件`MyIntegrationEntities.java`，以注解的方式定义集成的以上5个实体以及其子实体
 
-```java title="beaver-iot-integrations/integrations/my-integration/src/main/java/com/milesight/beaveriot/myintegration/MyIntegrationEntities.java"
+```java title="beaver-iot-integrations/integrations/sample-integrations/my-integration/src/main/java/com/milesight/beaveriot/myintegration/MyIntegrationEntities.java"
 package com.milesight.beaveriot.myintegration;
 
 import com.milesight.beaveriot.context.integration.entity.annotation.Attribute;
@@ -233,7 +233,7 @@ public class MyIntegrationEntities extends ExchangePayload {
 
     @Entity(type = EntityType.SERVICE, identifier = "delete_device")
     // highlight-next-line
-    private String deleteDevice;
+    private DeleteDevice deleteDevice;
 
 
     @Data
@@ -254,11 +254,17 @@ public class MyIntegrationEntities extends ExchangePayload {
     @Data
     @EqualsAndHashCode(callSuper = true)
     @Entities
-    public static class AddDevice extends ExchangePayload {
+    public static class AddDevice extends ExchangePayload implements AddDeviceAware {
         @Entity
         private String ip;
     }
 
+    @Data
+    @EqualsAndHashCode(callSuper = true)
+    @Entities
+    public static class DeleteDevice extends ExchangePayload implements DeleteDeviceAware {
+    }
+  
     public enum DetectStatus {
         STANDBY, DETECTING;
     }
@@ -269,7 +275,7 @@ public class MyIntegrationEntities extends ExchangePayload {
 这个类中，我们定义了**增加设备**和**删除设备**的实体，我们需要将这个他们的`identifier`同步到元数据中，让{ProjectName}知道这个集成支持添加和删除设备。
 
 更新资源文件`integration.yaml`
-```yaml title="beaver-iot-integrations/integrations/my-integration/src/main/resources/integration.yaml"
+```yaml title="beaver-iot-integrations/integrations/sample-integrations/my-integration/src/main/resources/integration.yaml"
 integration:
    my-integration: # integration identifier
       # ...
@@ -292,7 +298,7 @@ integration:
 
 新建一个Java类文件`MyDeviceEntities.java`，以注解的方式定义设备和其实体。
 
-```java title="beaver-iot-integrations/integrations/my-integration/src/main/java/com/milesight/beaveriot/myintegration/MyDeviceEntities.java"
+```java title="beaver-iot-integrations/integrations/sample-integrations/my-integration/src/main/java/com/milesight/beaveriot/myintegration/MyDeviceEntities.java"
 package com.milesight.beaveriot.myintegration;
 
 import com.milesight.beaveriot.context.integration.entity.annotation.Attribute;
@@ -328,12 +334,12 @@ public class MyDeviceEntities extends ExchangePayload {
 
 在这之前，我们定义了添加/删除设备服务实体。当用户调用添加/删除设备服务，会发送相应事件，因此我们只需要通过[key](../key-dev-concept.md#key)监听这个事件，然后在处理方法中实现对应功能即可。
 
-新增设备事件的上下文中有用户指定的设备名称`device_name`。这里添加设备的代码的作用相当于动态实现上面定义设备的注解。由于我们限定`identifier`的[字符](../key-dev-concept.md#identifier)不能包含ip地址中的`.`，因此我们做了一层转换。
+新增设备事件的上下文中有用户指定的设备名称`device_name`（示例中采用实现AddDeviceAware接口方式来获取新增设备名）。这里添加设备的代码的作用相当于动态实现上面定义设备的注解。由于我们限定`identifier`的[字符](../key-dev-concept.md#identifier)不能包含ip地址中的`.`，因此我们做了一层转换。
 
-删除设备事件的上下文中有设备的实例`device`。
+删除设备事件的上下文中有设备的实例`device`（示例中采用实现DeleteDeviceAware接口方式来获取删除的设备）。
 
 新建一个Java类文件`MyDeviceService.java`，在这个类中实现添加和删除设备的方法
-```java title="beaver-iot-integrations/integrations/my-integration/src/main/java/com/milesight/beaveriot/myintegration/MyDeviceService.java"
+```java title="beaver-iot-integrations/integrations/sample-integrations/my-integration/src/main/java/com/milesight/beaveriot/myintegration/MyDeviceService.java"
 package com.milesight.beaveriot.myintegration;
 
 import com.milesight.beaveriot.context.api.DeviceServiceProvider;
@@ -364,31 +370,31 @@ public class MyDeviceService {
     @EventSubscribe(payloadKeyExpression = "my-integration.integration.add_device.*", eventType = ExchangeEvent.EventType.DOWN)
     // highlight-next-line
     public void onAddDevice(Event<MyIntegrationEntities.AddDevice> event) {
-        String deviceName = event.getPayload().getContext("device_name", "Device Name");
-        String ip = event.getPayload().getIp();
+        MyIntegrationEntities.AddDevice addDevice = event.getPayload();
+        String deviceName = addDevice.getAddDeviceName();
         final String integrationId = "my-integration";
         Device device = new DeviceBuilder(integrationId)
-                .name(deviceName)
-                .identifier(ip.replace(".", "_"))
-                .additional(Map.of("ip", ip))
-                .build();
-
-        Entity entity = new EntityBuilder(integrationId, device.getKey())
-                .identifier("status")
-                .property("Device Status", AccessMod.R)
-                .valueType(EntityValueType.LONG)
-                .attributes(new AttributeBuilder().enums(MyDeviceEntities.DeviceStatus.class).build())
-                .build();
-        device.setEntities(Collections.singletonList(entity));
+              .name(deviceName)
+              .identifier(ip.replace(".", "_"))
+              .additional(Map.of("ip", ip))
+              .entity(()->{
+                return new EntityBuilder(integrationId)
+                        .identifier("status")
+                        .property("Device Status", AccessMod.R)
+                        .valueType(EntityValueType.LONG)
+                        .attributes(new AttributeBuilder().enums(MyDeviceEntities.DeviceStatus.class).build())
+                        .build();
+              })
+              .build();
 
         deviceServiceProvider.save(device);
     }
 
     @EventSubscribe(payloadKeyExpression = "my-integration.integration.delete_device", eventType = ExchangeEvent.EventType.DOWN)
     // highlight-next-line
-    public void onDeleteDevice(Event<ExchangePayload> event) {
-        Device device = (Device) event.getPayload().getContext("device");
-        deviceServiceProvider.deleteById(device.getId());
+    public void onDeleteDevice(Event<MyIntegrationEntities.DeleteDevice> event) {
+      Device device = event.getPayload().getDeletedDevice();
+      deviceServiceProvider.deleteById(device.getId());
     }
 }
 
@@ -400,7 +406,7 @@ public class MyDeviceService {
 更新Java类文件`MyDeviceService.java`，在这个类中添加Benchmark服务实体的方法实现。
 
 检测所有设备完成后，会[上行](./advanced/eventbus.md#exchangeevent)一个`detect_report`报告事件。
-```java title="beaver-iot-integrations/integrations/my-integration/src/main/java/com/milesight/beaveriot/myintegration/MyDeviceService.java"
+```java title="beaver-iot-integrations/integrations/sample-integrations/my-integration/src/main/java/com/milesight/beaveriot/myintegration/MyDeviceService.java"
 @Service
 public class MyDeviceService {
     // ...
@@ -462,7 +468,7 @@ public class MyDeviceService {
 
 更新Java类文件`MyDeviceService.java`，在这个类中添加报告的监听方法，并且打印。
 
-```java title="beaver-iot-integrations/integrations/my-integration/src/main/java/com/milesight/beaveriot/myintegration/MyDeviceService.java"
+```java title="beaver-iot-integrations/integrations/sample-integrations/my-integration/src/main/java/com/milesight/beaveriot/myintegration/MyDeviceService.java"
 @Service
 public class MyDeviceService {
     // ...
@@ -491,7 +497,7 @@ public class MyDeviceService {
 
 创建一个Java类`MyIntegrationController.java`，在这个类中添加Controller，接收请求。
 
-```java title="beaver-iot-integrations/integrations/my-integration/src/main/java/com/milesight/beaveriot/myintegration/MyIntegrationController.java"
+```java title="beaver-iot-integrations/integrations/sample-integrations/my-integration/src/main/java/com/milesight/beaveriot/myintegration/MyIntegrationController.java"
 package com.milesight.beaveriot.myintegration;
 
 import com.fasterxml.jackson.databind.JsonNode;
