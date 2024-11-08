@@ -358,6 +358,90 @@ public class MyDeviceEntities extends ExchangePayload {
         .build();
 ```
 
+#### 添加/删除设备实体
+
+{ProjectName}平台支持添加、删除设备，开发者可通过配置
+
+- **新增设备**
+
+新增设备事件，平台将会在ExchangePayload上下文中携带设备名称`device_name`,开发者可以从ExchangePayload的上下文中获取，或实现`AddDeviceAware`接口获取新增的设备信息。
+
+<Tabs>
+  <TabItem value="方式1" label="方式1(推荐)" default>
+
+- 定时实体
+```java
+    @Data
+    @EqualsAndHashCode(callSuper = true)
+    @Entities
+    public static class AddDevice extends ExchangePayload implements AddDeviceAware {
+      @Entity
+      private String ip;
+    }
+```
+- 获取设备名
+```java
+  @EventSubscribe(payloadKeyExpression = "my-integration.integration.add_device.*", eventType = ExchangeEvent.EventType.DOWN)
+  // highlight-next-line
+  public void onAddDevice(Event<MyIntegrationEntities.AddDevice> event) {
+      String deviceName = event.getPayload().getAddDeviceName();
+      ...
+  }
+```
+  </TabItem>
+  <TabItem value="方式2" label="方式2" default>
+- 获取设备名
+```java
+  @EventSubscribe(payloadKeyExpression = "my-integration.integration.add_device.*", eventType = ExchangeEvent.EventType.DOWN)
+  // highlight-next-line
+  public void onAddDevice(Event<MyIntegrationEntities.AddDevice> event) {
+      String deviceName = event.getPayload().getContext().get(ExchangeContextKeys.DEVICE_NAME_ON_ADD);
+      ...
+  }
+```
+  </TabItem>
+</Tabs>
+
+- **删除设备**
+
+删除设备事件，平台将会在ExchangePayload上下文中携带删除的设备`device`,开发者可以从ExchangePayload的上下文中获取，或实现`DeleteDeviceAware`接口获取新增的设备信息。
+
+
+<Tabs>
+<TabItem value="方式1" label="方式1(推荐)" default>
+
+- 定时实体
+```java
+  @Data
+  @EqualsAndHashCode(callSuper = true)
+  @Entities
+  public static class DeleteDevice extends ExchangePayload implements DeleteDeviceAware {
+  }
+```
+- 获取删除的设备
+```java
+  @EventSubscribe(payloadKeyExpression = "my-integration.integration.delete_device", eventType = ExchangeEvent.EventType.DOWN)
+  // highlight-next-line
+  public void onDeleteDevice(Event<MyIntegrationEntities.DeleteDevice> event) {
+      Device device = event.getPayload().getDeletedDevice();
+      ...
+  }
+```
+  </TabItem>
+  <TabItem value="方式2" label="方式2" default>
+- 获取删除的设备
+```java
+  @EventSubscribe(payloadKeyExpression = "my-integration.integration.delete_device", eventType = ExchangeEvent.EventType.DOWN)
+  // highlight-next-line
+  public void onDeleteDevice(Event<MyIntegrationEntities.DeleteDevice> event) {
+      Device device = event.getPayload().getContext().get(ExchangeContextKeys.DEVICE_ON_DELETE);
+      ...
+  }
+```
+  </TabItem>
+</Tabs>
+
+
 ### 基于YAML构建
  为方便开发，{ProjectName}平台也提供了基于YAML的方式构建设备、实体等对象。开发者只需在集成的yaml文件中定义设备、实体等对象即可完成设备、实体的构建。平台将会在集成启动时加载对应的实体、集成并初始化。
 
