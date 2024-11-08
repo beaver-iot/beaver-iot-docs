@@ -124,7 +124,7 @@ ExchangeEvent对应的Payload为**ExchangePayload对象**,开发者也可以自�
 :::
 
 ## 事件订阅
-平台提供了**@EventSubscribe注解**，用于订阅事件，当前支持的事件类型有：设备事件、实体事件、实体值数据交换事件(Exchange)。同时支持Key通配符表达式匹配。
+平台提供了@**EventSubscribe注解**，用于订阅事件，当前支持的事件类型有：设备事件、实体事件、实体值数据交换事件(Exchange)。同时支持Key通配符表达式匹配。
 ### 注解说明
 - @EventSubscribe注解
     - eventType：事件类型，参见事件定义章节的说明
