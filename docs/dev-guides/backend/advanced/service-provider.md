@@ -147,6 +147,84 @@ Device findByIdentifier(String identifier, String integrationId);
 ```
 
 ## EntityServiceProvider 接口文档
+{ProjectName} 平台提供了`EntityServiceProvider`接口，提供常用的entity操作方法。
+
+### findByTargetId
+根据目标类型和目标ID获取实体列表
+#### 方法签名
+```java
+    List<Entity> findByTargetId(AttachTargetType targetType, String targetId);
+```
+
+### findByTargetIds
+根据目标类型和目标ID集合获取实体列表
+#### 方法签名
+```java
+    List<Entity> findByTargetIds(AttachTargetType targetType, List<String> targetIds);
+```
+
+### save
+保存实体
+#### 方法签名
+```java
+    void save(Entity entity);
+```
+
+### batchSave
+ 批量保存实体
+#### 方法签名
+```java
+    void batchSave(List<Entity> entityList);
+```
+
+### deleteByTargetId
+根据目标ID删除实体
+#### 方法签名
+```java
+    void deleteByTargetId(String targetId);
+```
+
+### countAllEntitiesByIntegrationId
+根据集成ID统计所有实体数量（包含集成下设备的实体）
+#### 方法签名
+```java
+    long countAllEntitiesByIntegrationId(String integrationId);
+```
+
+### countIntegrationEntitiesByIntegrationId
+根据集成ID集合统计集成实体数量（包含集成下设备的实体）
+#### 方法签名
+```java
+    Map<String, Long> countAllEntitiesByIntegrationIds(List<String> integrationIds);
+```
+
+### countIntegrationEntitiesByIntegrationId
+根据集成ID统计集成实体数量（不包含集成下设备的实体）
+#### 方法签名
+```java
+    long countIntegrationEntitiesByIntegrationId(String integrationId);
+```
+
+### countIntegrationEntitiesByIntegrationIds
+根据集成ID集合统计集成实体数量（不包含集成下设备的实体）
+#### 方法签名
+```java
+    Map<String, Long> countIntegrationEntitiesByIntegrationIds(List<String> integrationIds);
+```
+
+### findByKey
+根据实体key查找实体
+#### 方法签名
+```java
+    Entity findByKey(String entityKey);
+```
+
+### findByKeys
+根据实体key集合查找实体
+#### 方法签名
+```java
+    Map<String, Entity> findByKeys(String... entityKeys);
+```
 
 ## IntegrationServiceProvider 接口文档
 
@@ -159,7 +237,56 @@ Device findByIdentifier(String identifier, String integrationId);
 void save(Integration integrationConfig);
 ```
 
-
 ## EntityValueServiceProvider 接口文档
+{ProjectName} 平台提供了`EntityValueServiceProvider`接口，提供常用的entity最新值和历史值的操作方法。
+
+### saveValues
+保存实体最新值
+#### 方法签名
+```java
+    void saveValues(Map<String, Object> values, long timestamp);
+```
+
+### saveValues
+保存实体最新值（上报时间为当前时间）
+#### 方法签名
+```java
+    void saveValues(Map<String, Object> values);
+```
+
+### saveHistoryRecord
+保存实体历史值
+#### 方法签名
+```java
+    void saveHistoryRecord(Map<String, Object> recordValues, long timestamp);
+```
+
+### saveHistoryRecord
+保存实体历史值（上报时间为当前时间）
+#### 方法签名
+```java
+    void saveHistoryRecord(Map<String, Object> recordValues);
+```
+
+### findValueByKey
+根据实体key查找最新值
+#### 方法签名
+```java
+    JsonNode findValueByKey(String key);
+```
+
+### findValuesByKeys
+根据实体key集合查找最新值
+#### 方法签名
+```java
+    Map<String, JsonNode> findValuesByKeys(List<String> keys);
+```
+
+### findValuesByKeys
+根据实体key集合查找最新值
+#### 方法签名
+```java
+    @NonNull <T extends ExchangePayload> T findValuesByKey(String key, Class<T> entitiesClazz);
+```
 
 

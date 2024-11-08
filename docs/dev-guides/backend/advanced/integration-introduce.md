@@ -21,7 +21,7 @@ import { ProjectName } from '/src/consts';
 ### 代码仓库
 
 我们提供了一个集成开发的仓库，包含所有已经发布的集成插件、示例代码以及调试环境，
-你可以通过下载[beaver-iot-integrations代码仓库]({DevProjectRepoHttps})来体验集成开发。
+你可以通过下载<a href={DevProjectRepoHttps} target="_blank" rel="noopener noreferrer">beaver-iot-integrations代码仓库</a>来体验集成开发。
 
 ### pom.xml配置 
 - **依赖包引入**
