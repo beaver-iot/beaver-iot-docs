@@ -8,8 +8,6 @@ sidebar_position: 1
 
 可直接在 [Beaver IoT Demo](https://demo.beaver-iot.com/) 上进行体验。
 
-
-
 ## 前置准备
 
 - Pnpm 8 及以上版本；
@@ -52,16 +50,17 @@ cat ~/.ssh/id_rsa.pub | clip
 cat ~/.ssh/id_rsa.pub | pbcopy
 ```
 
-将生成并拷贝的 SSH 公钥，复制粘贴到 Gitlab 的 `用户设置 -> SSH 密钥` 中。然后，即可免密克隆项目到本地：
+将生成并拷贝的 SSH 公钥，添加到 Github 的 `Settings -> SSH and GPG keys -> SSH Keys` 中。然后，即可免密克隆项目到本地：
 
 ```bash
 # 克隆仓库
-git clone git@gitlab.milesight.com:oss/beaver-iot-web.git
+git clone git@github.com:beaver-iot/beaver-iot-web.git
 
 # 进入项目目录
 cd beaver-iot-web
 
 # 配置提交的用户名及邮箱
+# 若本地已配置，可跳过
 # 若需全局修改，可增加 --global 参数
 git config user.name xxx
 git config user.email xxx@milesight.com
