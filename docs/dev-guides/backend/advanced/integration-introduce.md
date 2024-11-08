@@ -101,10 +101,11 @@ import { ProjectName } from '/src/consts';
 请注意，集成配置文件中的`id`字段是集成的唯一标识，不可重复。
 :::
 #### icon-url配置
-icon-url支持相对路径和绝对路径地址，相对路径地址是相对于集成插件的根目录的路径，绝对路径地址是引用外部的图片地址。
-- 相对路径地址示例：`icon-url: /public/my-integration.png`
-- 绝对路径地址示例：`icon-url: https://www.example.com/my-integration.png`
-当使用相对路径地址，开发者需要将图片文件放置在集成插件的`/resources/static/public`目录下，例如：
+icon-url支持**相对路径**和**绝对路径**，**相对路径**是相对于集成插件的根目录的路径，**绝对路径**是引用外部的图片地址。
+- **相对路径**示例：`icon-url: /public/my-integration.png`
+- **绝对路径**示例：`icon-url: https://www.example.com/my-integration.png`
+
+当使用**相对路径**，开发者需要将图片文件放置在集成插件的`/resources/static/public`目录下，例如：
 ```yaml
   my-integration/
   ├── src/
@@ -172,16 +173,17 @@ integration:
 public class MyIntegrationBootstrap implements IntegrationBootstrap {
     @Override
     public void onPrepared(Integration integration) {
+      // todo: actions when prepared
     }
 
     @Override
     public void onStarted(Integration integrationConfig) {
-        // highlight-next-line
-        System.out.println("Hello, world!");
+      // todo: actions when started
     }
 
     @Override
     public void onDestroy(Integration integration) {
+      // todo: actions when destroyed
     }
 }
 ```
@@ -192,7 +194,7 @@ public class MyIntegrationBootstrap implements IntegrationBootstrap {
 
 - **完整的集成生命周期示例**
   
-  如下示例中，演示在`onPrepared`方法中添加初始化设备，`onStarted`方法中其中数据同步服务，`onDestroyed`方法中停止数据同步服务等操作
+  如下示例中，演示在`onPrepared`方法中添加初始化设备，`onStarted`方法中启用定时器，定时从集成平台获取设备状态数据，`onDestroyed`方法中停止定时器
 ```java
 @Component
 public class MyIntegrationBootstrap implements IntegrationBootstrap {
@@ -204,32 +206,34 @@ public class MyIntegrationBootstrap implements IntegrationBootstrap {
     @Override
     public void onPrepared(Integration integrationConfig) {
         // add initial device
-      // highlight-next-line  
-      Entity entityConfig = new EntityBuilder()
-                .property("parentProperty", AccessMod.W).valueType(EntityValueType.STRING)
-                .children()
-                    .valueType(EntityValueType.STRING).property("childrenProperty", AccessMod.W).end()
-                .build();
         // highlight-next-line
         Device device = new DeviceBuilder(integrationConfig.getId())
-                .name("demoDevice")
-                .identifier("demoDeviceIdentifier")
-                .entity(entityConfig)
-                .build();
+            .name("demoDevice")
+            .identifier("demoDeviceIdentifier")
+            // highlight-next-line
+            .entity(() -> new EntityBuilder()
+                .property("parentProperty", AccessMod.W)
+                .valueType(EntityValueType.OBJECT)
+                .children()
+                  .valueType(EntityValueType.STRING)
+                  .property("childrenProperty", AccessMod.W)
+                  .end()
+                .build())
+            .build();
       // highlight-next-line
         integrationConfig.addInitialDevice(device);
     }
 
     @Override
     public void onStarted(Integration integrationConfig) {
-        // start data sync service， when integration entity is ready
-        myIntegrationDataSyncService.init();
+        // start the timer for periodic tasks
+        myIntegrationDataSyncService.startTimer();
     }
 
     @Override
     public void onDestroy(Integration integrationConfig) {
-        // stop data sync service
-        myIntegrationDataSyncService.stop();
+        // stop the timer
+        myIntegrationDataSyncService.stopTimer();
     }
 }
 ```
@@ -285,17 +289,17 @@ public class MyIntegrationBootstrap implements IntegrationBootstrap {
   默认情况下，`application-dev`模块会使用H2作为内置数据库，开发者可以在`application-dev`文件中配置postgres数据库（或以环境变量配置方式），例如：
 ```shell
 DB_TYPE=postgres;
-SPRING_DATASOURCE_URL=jdbc:postgresql://ip:5432/postgres;
+SPRING_DATASOURCE_URL=jdbc:postgresql://<DB_SERVER_HOSTNAME>:<DB_SERVER_PORT>/<DB_NAME>;
 SPRING_DATASOURCE_PASSWORD=postgres;
 SPRING_DATASOURCE_USERNAME=postgres;
 SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
 ```
-## 集成发布
+## 集成安装
 集成以jar包插件的形式发布到{ProjectName}平台，开发者可以通过`maven`的`install`命以将集成插件打包成jar包，然后上传到{ProjectName}平台进行发布。
 - **集成打包**
 ```shell
 mvn package -pl integrations/my-integration -am -Dmaven.test.skip=true
 ```
-- **集成发布**
+- **集成安装**
 
-  将集成插件jar包添加到{ProjectName}的安装目录下的`/plugins`目录下，然后重启{ProjectName}平台即可。
+  将集成打包好的jar添加到{ProjectName}的安装目录下的`/plugins`目录下，然后重启{ProjectName}平台即可。

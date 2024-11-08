@@ -34,8 +34,7 @@ EntityEvent对应的Payload为**Entity对象**。
 #### ExchangeEvent
 表示**实体值数据**相关事件，事件的类型(`ExchangeEvent.EventType`)有：下行`DOWN` / 上行`UP`。
 
-ExchangeEvent对应的Payload为**ExchangePayload对象**,开发者也可以自定义Payload对象并继承**ExchangePayload**即可。可参见[设备/实体构建](entity-definition.md)章节的注解声明实体章节。
-
+ExchangeEvent的Payload为**ExchangePayload对象**，如果Payload是采用[注解方式定义的实体](./entity-definition.md#build-with-annotation)，那么这个实体类需要继承自**ExchangePayload**。
 
 :::tip
 {ProjectName} 平台提供了事件总线，开发者也可以自定义事件类型，只需实现自定义的Event事件和Payload即可，其中Event事件需要继承`Event`接口，Payload需要继承`IdentityKey`接口。

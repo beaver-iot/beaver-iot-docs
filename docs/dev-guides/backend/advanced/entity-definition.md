@@ -65,6 +65,7 @@ import TabItem from '@theme/TabItem';
 :::
 
 ## 对象构建
+<a id="build-with-annotation"></a>
 ### 基于注解构建
 {ProjectName}平台提供了基于注解的方式构建设备、实体，开发者只需在设备类、实体类上添加相应的注解即可完成设备、实体的构建。平台将会在集成启动时加载对应的实体、集成并初始化
 
@@ -410,7 +411,7 @@ public class MyDeviceEntities extends ExchangePayload {
 <Tabs>
 <TabItem value="方式1" label="方式1(推荐)" default>
 
-- 定时实体
+- 定义设备删除的实体
 ```java
   @Data
   @EqualsAndHashCode(callSuper = true)
@@ -418,6 +419,10 @@ public class MyDeviceEntities extends ExchangePayload {
   public static class DeleteDevice extends ExchangePayload implements DeleteDeviceAware {
   }
 ```
+
+:::danger 注意
+设备删除的实体不应该包含任何实体，即这个类应该为空。
+:::
 - 获取删除的设备
 ```java
   @EventSubscribe(payloadKeyExpression = "my-integration.integration.delete_device", eventType = ExchangeEvent.EventType.DOWN)
@@ -448,7 +453,7 @@ public class MyDeviceEntities extends ExchangePayload {
 ```yaml
 integration:
   my-integration: # integration identifier
-    ...
+    # ...
     initial-entities: # initial entities
       - identifier: 'connect' # entity identifier
         name: connect         # entity name
@@ -466,7 +471,7 @@ integration:
         entities:             # device entities
           - identifier: 'temperature'
             name: temperature
-            value_type: string
+            value_type: long
             access_mod: RW
             type: property
 ```
