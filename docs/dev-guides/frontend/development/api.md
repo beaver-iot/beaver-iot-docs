@@ -8,13 +8,13 @@ sidebar_position: 12
 
 ## 开始使用
 
-接口处理工具当前在 `shared/src/utils/request` 目录下位置，支持多种接口请求处理方式，支持多种配置方式，可灵活选择。
+接口处理工具当前在 `shared/src/utils/request` 目录下维护，支持多种接口请求配置方式，可灵活选择。
 
 创建实例：
 
 ```ts
 // client.ts
-import { createRequestClient } from '@iot/shared/src/utils/request';
+import { createRequestClient } from '@milesight/shared/src/utils/request';
 
 /** 业务请求头配置 */
 const headerHandler = async () => {
@@ -59,10 +59,10 @@ export default client;
 
 ```ts
 // services/http/user.ts
-import { attachAPI } from '@iot/shared/src/utils/request';
+import { attachAPI } from '@milesight/shared/src/utils/request';
 import client from 'client.ts';
 
-// APISchema 已在 @iot/shared/types/common.d.ts 中定义
+// APISchema 已在 @milesight/shared/types/common.d.ts 中定义
 interface UserAPISchema extends APISchema {
     /** 根据 id 获取用户 */
     getUser: {
@@ -105,7 +105,7 @@ interface UserAPISchema extends APISchema {
         request: {
             id: number;
         };
-        response: any;
+        response: unknown;
     },
 }
 
@@ -138,7 +138,7 @@ export default attachAPI<UserAPISchema>(client, {
         // 函数配置
         download: async (params) => {
             const resp = await client.request({
-                url: 'http://xxx.yeastar.com',
+                url: 'http://xxx.milesight.com',
                 method: 'GET',
                 params,
                 headers: {
